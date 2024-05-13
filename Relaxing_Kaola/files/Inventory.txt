@@ -1,0 +1,14 @@
+ItemID,Name,Quantity
+1,Steak,20
+2,Salad,50
+3,Burger,50
+4,Fish,40
+5,Chips,60
+6,Pizza,30
+7,Soda,100
+8,Wine,40
+9,Beer,70
+10,Nachos,45
+11,Tacos,50
+12,Pancakes,30
+

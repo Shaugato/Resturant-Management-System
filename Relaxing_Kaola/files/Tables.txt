@@ -1,0 +1,10 @@
+7,2,Reserved
+8,2,Reserved
+9,4,Available
+10,4,Reserved
+11,2,Available
+12,2,Reserved
+13,4,Available
+14,4,Reserved
+15,2,Available
+16,2,Reserved

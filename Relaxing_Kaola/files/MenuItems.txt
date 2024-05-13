@@ -1,0 +1,14 @@
+MenuItemID,Name,Price,Dietary
+1,Steak,25.00,None
+2,Salad,10.00,Vegan
+3,Burger,12.00,None
+4,Fish,15.00,None
+5,Chips,5.00,Vegan
+6,Pizza,20.00,None
+7,Soda,3.00,Vegan
+8,Wine,10.00,None
+9,Beer,4.00,None
+10,Nachos,8.00,Vegan
+11,Tacos,12.00,None
+12,Pancakes,10.00,None
+

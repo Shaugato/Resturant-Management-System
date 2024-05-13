@@ -1,0 +1,14 @@
+CustomerID,UserID,Name,Phone
+1,1,John Doe,123-456-7890
+2,2,Jane Smith,098-765-4321
+3,3,Alice Jones,987-654-3210
+4,4,Bob Brown,876-543-2109
+5,5,Charlie Black,765-432-1098
+6,6,Daisy White,654-321-0987
+7,7,Edward Green,543-210-9876
+8,8,Flora Pink,432-109-8765
+9,9,George Gray,321-098-7654
+10,10,Harry Red,210-987-6543
+11,11,Irene Purple,109-876-5432
+12,12,Jake Blue,098-765-4321
+

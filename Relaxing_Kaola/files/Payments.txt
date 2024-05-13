@@ -1,0 +1,10 @@
+2,2,30.00,Cash,Completed
+3,3,45.00,Credit Card,Completed
+4,4,25.50,Debit Card,Completed
+5,5,75.00,Credit Card,Completed
+6,6,20.00,Cash,Completed
+7,7,33.50,Credit Card,Completed
+8,8,22.00,Debit Card,Completed
+9,9,18.00,Cash,Completed
+10,10,24.50,Credit Card,Completed
+11,11,15.00,Debit Card,Completed

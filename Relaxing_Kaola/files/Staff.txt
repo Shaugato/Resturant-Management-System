@@ -1,0 +1,14 @@
+StaffID,UserID,Role,Name
+1,1,Manager,John Doe
+2,2,Waitstaff,Jane Smith
+3,3,Chef,Alice Jones
+4,4,Bartender,Bob Brown
+5,5,Manager,Charlie Black
+6,6,Waitstaff,Daisy White
+7,7,Chef,Edward Green
+8,8,Waitstaff,Flora Pink
+9,9,Manager,George Gray
+10,10,Bartender,Harry Red
+11,11,Waitstaff,Irene Purple
+12,12,Chef,Jake Blue
+
