@@ -8,7 +8,7 @@ namespace Relaxing_Kaola
 {
     public interface PaymentProcessor
     {
-        bool ProcessPayment(int orderId, double amount);
+        bool ProcessPayment(string customerName, double amount, string cardNumber);
         bool RefundPayment(int paymentId);
     }
 

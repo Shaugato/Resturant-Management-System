@@ -57,7 +57,7 @@ namespace Relaxing_Kaola
                 string reservationRecord = $"{DbManager.GetAllRecords("Reservations").Count + 1},{customerId},{tableId},{reservationDate:yyyy-MM-dd},Confirmed";
                 if (DbManager.CreateRecord("Reservations", reservationRecord))
                 {
-                    NotificationService.SendAlert(customerId, "Reservation confirmed.");
+                    NotificationService.SendAlert(customerId, $"Reservation ID : {DbManager.GetAllRecords("Reservations").Count } And Reservation confirmed.");
                     return true;
                 }
                 else

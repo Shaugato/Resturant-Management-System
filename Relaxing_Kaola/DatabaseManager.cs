@@ -110,5 +110,75 @@ namespace Relaxing_Kaola
                 return new List<string>();
             }
         }
+        public int GetCustomerIdByName(string name)
+        {
+            try
+            {
+                string filePath = Path.Combine(basePath, "Customers.txt");
+                var customerRecord = File.ReadAllLines(filePath)
+                    .Skip(1)  // Assuming there is a header
+                    .Where(line => line.Split(',')[2].Trim('"').Equals(name, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                if (customerRecord != null)
+                {
+                    return int.Parse(customerRecord.Split(',')[0]);
+                }
+                Console.WriteLine("Customer not found.");
+                return -1;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while fetching customer ID: " + ex.Message);
+                return -1;
+            }
+        }
+        public string GetCustomerNameById(int customerId)
+        {
+            try
+            {
+                string filePath = Path.Combine(basePath, "Customers.txt");
+                var customerLine = File.ReadAllLines(filePath)
+                    .Skip(1) // Skip header
+                    .FirstOrDefault(line => line.StartsWith(customerId.ToString() + ","));
+
+                if (customerLine != null)
+                {
+                    return customerLine.Split(',')[2].Trim('"'); // Assuming name is the third column
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to retrieve customer name: " + ex.Message);
+                return null;
+            }
+        }
+
+
+        public string GetLatestOrderForCustomer(int customerId)
+        {
+            try
+            {
+                string filePath = Path.Combine(basePath, "Orders.txt");
+                var orders = File.ReadAllLines(filePath)
+                    .Skip(1) // Skip the header row
+                    .Where(line => line.Split(',')[1].Trim() == customerId.ToString())
+                    .Select(line => new
+                    {
+                        Order = line,
+                        OrderId = int.Parse(line.Split(',')[0].Trim())
+                    })
+                    .OrderByDescending(o => o.OrderId)
+                    .FirstOrDefault();
+
+                return orders?.Order;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while fetching the latest order for customer: " + ex.Message);
+                return null;
+            }
+        }
     }
 }

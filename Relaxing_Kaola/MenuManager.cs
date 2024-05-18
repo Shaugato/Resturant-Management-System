@@ -24,17 +24,19 @@ namespace Relaxing_Kaola
         {
             return DbManager.FindRecords("MenuItems", dietaryRestrictions);
         }
-        public string PrepareOrderSelection(List<int> selectedItemIds)
+        public string PrepareOrderSelection(Dictionary<int, int> selectedItemQuantities)
         {
             var allItems = ListAvailableItems();
             List<string> selectedItems = new List<string>();
 
-            foreach (int id in selectedItemIds)
+            foreach (var entry in selectedItemQuantities)
             {
-                var item = allItems.FirstOrDefault(it => it.StartsWith(id.ToString() + ","));
+                var itemId = entry.Key;
+                var quantity = entry.Value;
+                var item = allItems.FirstOrDefault(it => it.StartsWith(itemId.ToString() + ","));
                 if (item != null)
                 {
-                    selectedItems.Add(item);
+                    selectedItems.Add($"{quantity}x {item.Split(',')[1]}");
                 }
             }
 

@@ -1,13 +1,13 @@
-OrderID,CustomerID,Details,Status
-1,Completed
-2,2,'1x Salad; 2x Burger','Pending'
-3,3,'2x Fish; 3x Chips','In Kitchen'
-4,4,'1x Pizza; 1x Soda','Served'
-5,5,'2x Steak; 2x Wine','Pending'
-6,6,'3x Beer; 1x Nachos','Served'
-7,7,'2x Tacos; 3x Soda','Pending'
-8,8,'1x Burger; 1x Fries; 1x Soda','In Kitchen'
-9,9,'2x Pancakes; 2x Coffee','Served'
-10,10,'3x Omelette; 2x Tea','Pending'
-11,11,'2x Sandwich; 2x Juice','In Kitchen'
-13,1,3,Burger,12.00,None,Pending
+OrderID,CustomerID,Details,Status,TotalAmount
+1,1,'1x Soda; 2x Wine','Pending',23
+2,1,'1x Chips; 3x Tacos','Pending',41
+3,1,'1x Burger; 2x Chips; 3x Pizza; 4x Nachos','Pending',114
+5,1,'1x Salad; 2x Burger; 3x Fish; 4x Chips','Pending',99
+6,1,'1x Salad; 2x Burger; 3x Fish; 4x Chips','Pending',99
+7,2,'1x Salad; 2x Fish; 3x Pizza; 4x Wine','Pending',140
+8,4,'1x Salad; 2x Burger','Pending',34
+9,4,'','Pending',0
+10,4,'1x Steak; 2x Salad','Pending',45
+11,4,'1x Steak; 2x Salad; 3x Fish','Pending',90
+12,1,'1x Salad; 2x Burger; 3x Fish','Pending',79
+13,4,'1x Steak; 2x Burger; 3x Pizza','Pending',109

@@ -8,9 +8,10 @@ public class Program
     static NotificationService notificationService = new NotificationService(dbManager);
     static TableManager tableManager = new TableManager(dbManager);
     static MenuManager menuManager = new MenuManager(dbManager);
-    static OrderManager orderManager = new OrderManager(dbManager);
+    static OrderManager orderManager = new OrderManager(dbManager, menuManager);
     static ReservationSystem reservationSystem = new ReservationSystem(dbManager, notificationService, tableManager);
-    static DigitalPayment paymentProcessor = new DigitalPayment(dbManager);
+    static DigitalPayment paymentProcessor = new DigitalPayment(dbManager, notificationService);
+
 
     public static void Main(string[] args)
     {
@@ -55,13 +56,13 @@ public class Program
                 switch (choice)
                 {
                     case "1":
-                        MakeAnOrder();
+                        MakeAnOrder(customerId);
                         break;
                     case "2":
                         MakeAReservation(customerId);
                         break;
                     case "3":
-                        ProcessPayment();
+                        //ProcessPayment();
                         break;
                     case "4":
                         GenerateStatistics();
@@ -101,7 +102,7 @@ public class Program
             switch (choice)
             {
                 case "1":
-                    MakeAnOrder();
+                   // MakeAnOrder(customerId);
                     break;
                 case "2":
                     Console.WriteLine("Enter the customer name:");
@@ -130,7 +131,7 @@ public class Program
                     }
                     break;
                 case "4":
-                    ProcessPayment();
+                    //ProcessPayment();
                     break;
                 case "5":
                     GenerateStatistics();
@@ -146,9 +147,15 @@ public class Program
     
     }
 
-    static void MakeAnOrder()
+    static void MakeAnOrder(int customerId)
     {
-        Console.WriteLine("Available Menu Items:");
+        string customerName = dbManager.GetCustomerNameById(customerId);
+        if (string.IsNullOrEmpty(customerName))
+        {
+            Console.WriteLine("Customer not found.");
+            return;
+        }
+        Console.WriteLine($"Hello, {customerName}. Available Menu Items:");
         var items = menuManager.ListAvailableItems();
         foreach (var item in items)
         {
@@ -158,21 +165,69 @@ public class Program
         Console.WriteLine("Enter the item numbers you want to order (comma separated):");
         var input = Console.ReadLine();
         var ids = input.Split(',');
-        List<int> itemIds = new List<int>();
+        Dictionary<int, int> itemQuantities = new Dictionary<int, int>();
+
         foreach (var id in ids)
         {
+            Console.WriteLine($"Enter quantity for item ID {id.Trim()}:");
+            int quantity = int.Parse(Console.ReadLine());
             if (int.TryParse(id.Trim(), out int itemId))
             {
-                itemIds.Add(itemId);
+                itemQuantities.Add(itemId, quantity);
             }
         }
 
-        var orderDetails = menuManager.PrepareOrderSelection(itemIds);
-        int customerId = 1;  // This should be determined by the current logged-in user session
-        orderManager.CreateOrder(customerId, orderDetails);
-        orderManager.FinalizeOrder(customerId);  // Assuming the Order ID is the same as the Customer ID for simplicity
-        Console.WriteLine("Order placed successfully.");
+        int orderId = orderManager.CreateOrder(customerId, itemQuantities);
+        if (orderId != -1)
+        {
+            double totalAmount = orderManager.CalculateTotalAmount(itemQuantities);
+            Console.WriteLine($"Order {orderId} placed successfully.");
+            Console.WriteLine($"Total amount due: ${totalAmount}");
+
+            // Automatically initiate the payment process using the customer's name
+            Console.WriteLine("Please confirm the payment amount to proceed:");
+            double enteredAmount = double.Parse(Console.ReadLine());
+
+            // Use the customer's name to initiate the payment process
+            ProcessPayment(customerName, enteredAmount, orderId, totalAmount);
+        }
+        else
+        {
+            Console.WriteLine("Failed to create the order.");
+        }
     }
+
+    static void ProcessPayment(string customerName, double enteredAmount, int orderId, double totalAmount)
+    {
+        Console.WriteLine("Please enter your debit card number:");
+        string cardNumber = Console.ReadLine();
+
+        if (Math.Abs(enteredAmount - totalAmount) < 0.01)
+        {
+            if (paymentProcessor.ValidateCardNumber(cardNumber))
+            {
+                if (paymentProcessor.ProcessPayment(customerName, enteredAmount, cardNumber))
+                {
+                    Console.WriteLine("Payment processed successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Payment failed.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid debit card number.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Entered amount does not match the total order amount.");
+        }
+    }
+
+
+
 
     static void MakeAReservation(int customerId)
     {
@@ -212,23 +267,6 @@ public class Program
         }
     }
 
-    static void ProcessPayment()
-    {
-        Console.WriteLine("Enter Order ID and Amount to pay:");
-        string[] tokens = Console.ReadLine().Split(',');
-        int orderId = int.Parse(tokens[0]);
-        double amount = double.Parse(tokens[1]);
-
-        if (paymentProcessor.ProcessPayment(orderId, amount))
-        {
-            notificationService.SendAlert(orderId, "Payment processed successfully.");
-            Console.WriteLine("Payment successful.");
-        }
-        else
-        {
-            Console.WriteLine("Payment failed.");
-        }
-    }
 
     static void GenerateStatistics()
     {

@@ -1,59 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Relaxing_Kaola
 {
     public class DigitalPayment : PaymentProcessor
     {
         private DatabaseManager DbManager;
+        private NotificationService NotificationService;
 
-        public DigitalPayment(DatabaseManager dbManager)
+        public DigitalPayment(DatabaseManager dbManager, NotificationService notificationService)
         {
             DbManager = dbManager;
+            NotificationService = notificationService;
         }
 
-        public bool ProcessPayment(int orderId, double amount)
+
+        public bool ProcessPayment(string customerName, double enteredAmount, string cardNumber)
         {
-            // Retrieve the order to calculate the total amount
-            var orderDetails = DbManager.FindRecords("Orders", orderId.ToString()).FirstOrDefault();
+            int customerId = DbManager.GetCustomerIdByName(customerName);
+            if (customerId == -1)
+            {
+                Console.WriteLine("Invalid customer name.");
+                return false;
+            }
+
+            string orderDetails = DbManager.GetLatestOrderForCustomer(customerId);
             if (orderDetails == null)
             {
                 Console.WriteLine("Order not found.");
                 return false;
             }
 
-            // Calculate the total amount from order details
-            double calculatedAmount = CalculateTotalAmount(orderDetails);
-            if (calculatedAmount != amount)
+            string[] details = orderDetails.Split(',');
+            double calculatedAmount = double.Parse(details[4], CultureInfo.InvariantCulture); // Assuming index 4 is TotalAmount
+
+            if (Math.Abs(calculatedAmount - enteredAmount) > 0.01)
             {
-                Console.WriteLine("Payment amount does not match the order total.");
+                Console.WriteLine($"Entered amount does not match the total order amount.");
                 return false;
             }
 
-            // Simulate payment processing
-            string paymentRecord = $"{DbManager.GetAllRecords("Payments").Count + 1},{orderId},{amount},Digital,Completed";
-            DbManager.CreateRecord("Payments", paymentRecord);
-            return true;
+            if (ValidateCardNumber(cardNumber))
+            {
+                string paymentRecord = $"{DbManager.GetAllRecords("Payments").Count + 1},{details[0]},{enteredAmount.ToString(CultureInfo.InvariantCulture)},Digital,Completed";
+                DbManager.CreateRecord("Payments", paymentRecord);
+                NotificationService.SendAlert(customerId, $"Payment of ${enteredAmount} has been processed successfully.");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Invalid debit card number.");
+                return false;
+            }
         }
+
+
+
+
+
+        public bool ValidateCardNumber(string cardNumber)
+        {
+            int sum = 0;
+            bool alternate = false;
+
+            for (int i = cardNumber.Length - 1; i >= 0; i--)
+            {
+                var digit = (int)char.GetNumericValue(cardNumber[i]);
+                if (alternate)
+                {
+                    digit *= 2;
+                    if (digit > 9)
+                    {
+                        digit = (digit % 10) + 1;
+                    }
+                }
+                sum += digit;
+                alternate = !alternate;
+            }
+
+            return (sum % 10 == 0);
+        }
+
+
 
         public bool RefundPayment(int paymentId)
         {
-            // Simply mark the payment as refunded for simplicity
-            var paymentDetails = DbManager.FindRecords("Payments", paymentId.ToString()).FirstOrDefault();
-            if (paymentDetails == null)
+            var paymentDetails = DbManager.FindRecords("Payments", $"{paymentId},").FirstOrDefault();
+            if (paymentDetails != null)
             {
-                Console.WriteLine("Payment not found.");
-                return false;
+                var fields = paymentDetails.Split(',');
+                int orderId = int.Parse(fields[1]);
+                var orderDetails = DbManager.FindRecords("Orders", $"{orderId},").FirstOrDefault();
+                int customerId = int.Parse(orderDetails.Split(',')[1]);
+                string updatedPayment = paymentDetails.Replace("Completed", "Refunded");
+                if (DbManager.UpdateRecord("Payments", paymentId + ",", updatedPayment))
+                {
+                    NotificationService.SendAlert(customerId, $"Your payment for order {orderId} has been refunded.");
+                    return true;
+                }
             }
-
-            string updatedPayment = paymentDetails.Replace("Completed", "Refunded");
-            return DbManager.UpdateRecord("Payments", paymentId + ",", updatedPayment);
+            return false;
         }
 
-        private double CalculateTotalAmount(string orderDetails)
+        /*private double CalculateTotalAmount(string orderDetails)
         {
             // Assuming the order details format is "OrderId,CustomerId,Details,Status"
             var details = orderDetails.Split(',');
@@ -72,7 +126,7 @@ namespace Relaxing_Kaola
             }
 
             return totalAmount;
-        }
+        }*/
     }
 
 }
