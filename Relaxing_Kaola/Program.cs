@@ -65,7 +65,7 @@ public class Program
                         //ProcessPayment();
                         break;
                     case "4":
-                        GenerateStatistics();
+                        //GenerateStatistics();
                         break;
                     case "5":
                         exit = true;
@@ -92,7 +92,6 @@ public class Program
             Console.WriteLine("1. Make an Order For the Customer");
             Console.WriteLine("2. Make a Reservation for the Customer");
             Console.WriteLine("3. Cancel a Reservation for the Customer");
-            Console.WriteLine("3. Process Payment");
             Console.WriteLine("4. Generate Statistics");
             Console.WriteLine("5. Exit");
          
@@ -132,11 +131,10 @@ public class Program
                     break;
                 case "4":
                     //ProcessPayment();
+                    Statistics stats = new Statistics(dbManager);
+                    stats.DisplayItemSalesStatistics();
                     break;
                 case "5":
-                    GenerateStatistics();
-                    break;
-                case "6":
                     exit = true;
                     break;
                 default:
@@ -268,11 +266,11 @@ public class Program
     }
 
 
-    static void GenerateStatistics()
+    /*static void GenerateStatistics()
     {
         Statistics stats = new Statistics(dbManager);
         stats.GenerateSalesReport();
         stats.AnalyzeCustomerTrends();
         stats.AnalyzeMostSellingItems();
-    }
+    }*/
 }

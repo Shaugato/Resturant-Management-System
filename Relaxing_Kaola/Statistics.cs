@@ -15,63 +15,47 @@ namespace Relaxing_Kaola
             DbManager = dbManager;
         }
 
-        public void GenerateSalesReport()
-        {
-            var orders = DbManager.GetAllRecords("Orders");
-            double totalSales = 0;
-            foreach (var order in orders)
-            {
-                var fields = order.Split(',');
-                totalSales += double.Parse(fields[2]); // Assuming the order total is in the third position
-            }
-            Console.WriteLine($"Total sales amount: ${totalSales}");
-        }
-
-        public void AnalyzeCustomerTrends()
-        {
-            var orders = DbManager.GetAllRecords("Orders");
-            var customerOrders = orders.GroupBy(
-                o => o.Split(',')[1], // Group by CustomerId
-                o => o.Split(',')[2], // Sum the totals
-                (key, g) => new { CustomerId = key, TotalSpent = g.Sum(s => double.Parse(s)) });
-
-            Console.WriteLine("Customer Spending Trends:");
-            foreach (var item in customerOrders)
-            {
-                Console.WriteLine($"Customer {item.CustomerId} spent a total of ${item.TotalSpent}");
-            }
-        }
-
         // Method to analyze the most selling items
-        public void AnalyzeMostSellingItems()
+        public void DisplayItemSalesStatistics()
         {
             var orders = DbManager.GetAllRecords("Orders");
-            Dictionary<string, int> itemCounts = new Dictionary<string, int>();
+            Dictionary<string, (int quantity, double totalRevenue)> itemSales = new Dictionary<string, (int, double)>();
+            double totalRevenue = 0;
 
-            foreach (var order in orders)
+            // Parse each order and update the item sales count and revenue
+            foreach (var order in orders.Skip(1)) // Skip the header
             {
-                var details = order.Split(',')[2]; // Assuming details are in the third column
-                var items = details.Split(';'); // Assuming items in an order are separated by semicolon
+                var details = order.Split(',')[2].Trim('\'');  // Assuming item details are in the third column
+                var totalAmount = double.Parse(order.Split(',')[4]); // Assuming total amount is in the fifth column
+                var items = details.Split(';');
 
                 foreach (var item in items)
                 {
-                    var itemDetails = item.Trim().Split('x'); // Assuming format "2x Steak"
-                    var itemName = itemDetails[1].Trim();
-                    var quantity = int.Parse(itemDetails[0]);
+                    var parts = item.Trim().Split('x');
+                    var quantity = int.Parse(parts[0].Trim());
+                    var itemName = parts[1].Trim();
 
-                    if (itemCounts.ContainsKey(itemName))
-                        itemCounts[itemName] += quantity;
+                    if (itemSales.ContainsKey(itemName))
+                    {
+                        itemSales[itemName] = (itemSales[itemName].quantity + quantity, itemSales[itemName].totalRevenue + quantity * totalAmount);
+                    }
                     else
-                        itemCounts[itemName] = quantity;
+                    {
+                        itemSales[itemName] = (quantity, quantity * totalAmount);
+                    }
                 }
+
+                totalRevenue += totalAmount;
             }
 
-            var mostSellingItems = itemCounts.OrderByDescending(kvp => kvp.Value).ToList();
-            Console.WriteLine("Most Selling Items:");
-            foreach (var item in mostSellingItems)
+            // Display the items sorted by quantity, descending
+            Console.WriteLine("Item Sales Statistics:");
+            Console.WriteLine("Item | Quantity Sold | Total Revenue");
+            foreach (var item in itemSales.OrderByDescending(i => i.Value.quantity))
             {
-                Console.WriteLine($"{item.Key}: {item.Value} sold");
+                Console.WriteLine($"{item.Key}: {item.Value.quantity} units, ${item.Value.totalRevenue:N2}");
             }
+            Console.WriteLine($"Total Revenue: ${totalRevenue:N2}");
         }
     }
 

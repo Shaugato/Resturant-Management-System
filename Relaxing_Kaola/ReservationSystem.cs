@@ -59,6 +59,7 @@ namespace Relaxing_Kaola
                 {
                     NotificationService.SendAlert(customerId, $"Reservation ID : {DbManager.GetAllRecords("Reservations").Count } And Reservation confirmed.");
                     return true;
+
                 }
                 else
                 {

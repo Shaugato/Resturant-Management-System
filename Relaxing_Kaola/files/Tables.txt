@@ -6,5 +6,5 @@
 12,2,Reserved
 13,4,Reserved
 14,4,Reserved
-15,2,Reserved
+15,2,Available
 16,2,Available
