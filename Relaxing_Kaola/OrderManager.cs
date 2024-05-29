@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relaxing_Kaola
 {
@@ -26,7 +24,7 @@ namespace Relaxing_Kaola
 
             string newOrder = $"{newOrderId},{customerId},'{orderDetails}','Pending',{totalAmount}";
             bool success = dbManager.CreateRecord("Orders", newOrder);
-            return success ? newOrderId : -1;  // Return the new order ID if successful, otherwise -1
+            return success ? newOrderId : -1;
         }
 
         public double CalculateTotalAmount(Dictionary<int, int> selectedItemQuantities)
@@ -35,7 +33,7 @@ namespace Relaxing_Kaola
             var allItems = menuManager.ListAvailableItems();
             foreach (var entry in selectedItemQuantities)
             {
-                var item = allItems.FirstOrDefault(it => it.StartsWith(entry.Key.ToString() + ","));
+                var item = allItems.FirstOrDefault(it => it.StartsWith($"{entry.Key},"));
                 if (item != null)
                 {
                     double price = double.Parse(item.Split(',')[2], CultureInfo.InvariantCulture);
@@ -45,16 +43,26 @@ namespace Relaxing_Kaola
             return totalAmount;
         }
 
-        public bool UpdateOrder(int orderId, string newDetails)
+        public double GetOrderTotalAmount(int orderId)
         {
-            return dbManager.UpdateRecord("Orders", $"{orderId},", $"{orderId},{newDetails}");
+            var order = dbManager.FindRecords("Orders", $"{orderId},").FirstOrDefault();
+            if (order != null)
+            {
+                var fields = order.Split(',');
+                return double.Parse(fields[4], CultureInfo.InvariantCulture);
+            }
+            return 0;
         }
 
-        public bool FinalizeOrder(int orderId)
+        public bool RemoveOrder(int orderId)
         {
-            string update = $"{orderId},Completed";
-            return dbManager.UpdateRecord("Orders", orderId + ",", update);
+            var orderRecord = dbManager.FindRecords("Orders", orderId.ToString()).FirstOrDefault();
+            if (orderRecord != null)
+            {
+                dbManager.DeleteRecord("Orders", orderId.ToString());
+                return true;
+            }
+            return false;
         }
     }
-
 }

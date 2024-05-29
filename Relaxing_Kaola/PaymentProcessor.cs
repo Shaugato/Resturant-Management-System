@@ -11,5 +11,4 @@ namespace Relaxing_Kaola
         bool ProcessPayment(string customerName, double amount, string cardNumber);
         bool RefundPayment(int paymentId);
     }
-
 }

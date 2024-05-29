@@ -15,7 +15,7 @@ namespace Relaxing_Kaola
             DbManager = dbManager;
         }
 
-        public bool AdjustInventory(string itemName, int adjustment)
+        public bool AdjustInventory(string itemName, int adjustment)  //not yet used in the program yet
         {
             var itemDetails = DbManager.FindRecords("Inventory", itemName).FirstOrDefault();
             if (itemDetails != null)
@@ -35,7 +35,7 @@ namespace Relaxing_Kaola
             return false;
         }
 
-        public bool CheckStock(string itemName)
+        public bool CheckStock(string itemName)  // Not yet implemented at the program yet
         {
             var itemDetails = DbManager.FindRecords("Inventory", itemName).FirstOrDefault();
             if (itemDetails != null)

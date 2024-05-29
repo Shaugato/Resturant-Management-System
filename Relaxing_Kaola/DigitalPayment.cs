@@ -88,45 +88,24 @@ namespace Relaxing_Kaola
 
 
 
-        public bool RefundPayment(int paymentId)
+        public bool RefundPayment(int orderId)
         {
-            var paymentDetails = DbManager.FindRecords("Payments", $"{paymentId},").FirstOrDefault();
-            if (paymentDetails != null)
+            var orderRecord = DbManager.FindRecords("Orders", orderId.ToString()).FirstOrDefault();
+            if (orderRecord != null)
             {
-                var fields = paymentDetails.Split(',');
-                int orderId = int.Parse(fields[1]);
-                var orderDetails = DbManager.FindRecords("Orders", $"{orderId},").FirstOrDefault();
-                int customerId = int.Parse(orderDetails.Split(',')[1]);
-                string updatedPayment = paymentDetails.Replace("Completed", "Refunded");
-                if (DbManager.UpdateRecord("Payments", paymentId + ",", updatedPayment))
+                DbManager.DeleteRecord("Orders", orderId.ToString());
+                var paymentRecord = DbManager.FindRecords("Payments", orderId.ToString()).FirstOrDefault();
+                if (paymentRecord != null)
                 {
-                    NotificationService.SendAlert(customerId, $"Your payment for order {orderId} has been refunded.");
+                    DbManager.DeleteRecord("Payments", orderId.ToString());
+                    var paymentDetails = paymentRecord.Split(',');
+                    int customerId = int.Parse(paymentDetails[1]); // Assuming customer ID is the second field
+                    NotificationService.SendAlert(customerId, $"Your payment for order ID {orderId} has been refunded.");
                     return true;
                 }
             }
             return false;
         }
-
-        /*private double CalculateTotalAmount(string orderDetails)
-        {
-            // Assuming the order details format is "OrderId,CustomerId,Details,Status"
-            var details = orderDetails.Split(',');
-            var itemsDetails = details[2].Split(';'); // Assuming items details are separated by semicolon
-            double totalAmount = 0.0;
-
-            foreach (var itemDetail in itemsDetails)
-            {
-                var item = itemDetail.Trim().Split('x');
-                var menuItem = DbManager.FindRecords("MenuItems", item[1].Trim()).FirstOrDefault();
-                if (menuItem != null)
-                {
-                    var menuItemDetails = menuItem.Split(',');
-                    totalAmount += double.Parse(menuItemDetails[2]) * int.Parse(item[0]);
-                }
-            }
-
-            return totalAmount;
-        }*/
     }
 
 }

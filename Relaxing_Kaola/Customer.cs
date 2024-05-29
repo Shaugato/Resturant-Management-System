@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relaxing_Kaola
 {
@@ -25,7 +21,6 @@ namespace Relaxing_Kaola
         {
             Email = newEmail;
             Phone = newPhone;
-            // Assuming CustomerID is used as an identifier and must be matched at the start of the record
             return DbManager.UpdateRecord("Customers", $"{UserId},", $"{UserId},{Email},{Name},{Phone}");
         }
 
@@ -42,6 +37,4 @@ namespace Relaxing_Kaola
             }
         }
     }
-
-
 }

@@ -1,10 +1,11 @@
 ﻿using Relaxing_Kaola;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Program
 {
-    static DatabaseManager dbManager = new DatabaseManager();
+    static DatabaseManager dbManager = new DatabaseManager(@"C:\Users\Shaugato\source\repos\Software Acritectue\Relaxing_Kaola\Relaxing_Kaola\files");
     static NotificationService notificationService = new NotificationService(dbManager);
     static TableManager tableManager = new TableManager(dbManager);
     static MenuManager menuManager = new MenuManager(dbManager);
@@ -12,137 +13,153 @@ public class Program
     static ReservationSystem reservationSystem = new ReservationSystem(dbManager, notificationService, tableManager);
     static DigitalPayment paymentProcessor = new DigitalPayment(dbManager, notificationService);
 
-
     public static void Main(string[] args)
     {
         Console.WriteLine("Welcome to the Restaurant Reservation and Ordering System");
-        Console.WriteLine("Are you a customer or staff? (customer/staff)");
-        string userType = Console.ReadLine().ToLower();
+        while (true)
+        {
+            Console.WriteLine("Are you a customer or staff? (customer/staff)");
+            string userType = Console.ReadLine().ToLower();
 
-        if (userType == "customer")
-        {
-            CustomerInterface();
-        }
-        else if (userType == "staff")
-        {
-            StaffInterface();
-        }
-        else
-        {
-            Console.WriteLine("Invalid type entered. Exiting...");
+            if (userType == "customer")
+            {
+                CustomerInterface();
+                break;
+            }
+            else if (userType == "staff")
+            {
+                StaffInterface();
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid type entered. Please enter 'customer' or 'staff'.");
+            }
         }
     }
 
     static void CustomerInterface()
     {
-        Console.WriteLine("Enter your name:");
-        string name = Console.ReadLine();
-        var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
-        if (customerRecord != null)
+        while (true)
         {
-            int customerId = int.Parse(customerRecord.Split(',')[0]);
-
-            bool exit = false;
-            while (!exit)
+            Console.WriteLine("Enter your name:");
+            string name = Console.ReadLine();
+            var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
+            if (customerRecord != null)
             {
-                Console.WriteLine("Select an option:");
-                Console.WriteLine("1. Make an Order");
-                Console.WriteLine("2. Make a Reservation");
-                Console.WriteLine("3. Process Payment");
-                Console.WriteLine("4. Generate Statistics");
-                Console.WriteLine("5. Exit");
+                int customerId = int.Parse(customerRecord.Split(',')[0]);
 
-                var choice = Console.ReadLine();
-                switch (choice)
+                while (true)
                 {
-                    case "1":
-                        MakeAnOrder(customerId);
-                        break;
-                    case "2":
-                        MakeAReservation(customerId);
-                        break;
-                    case "3":
-                        //ProcessPayment();
-                        break;
-                    case "4":
-                        //GenerateStatistics();
-                        break;
-                    case "5":
-                        exit = true;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid option, please try again.");
-                        break;
+                    Console.WriteLine("Select an option:");
+                    Console.WriteLine("1. Make an Order");
+                    Console.WriteLine("2. Make a Reservation");
+                    Console.WriteLine("3. Process Payment");
+                    Console.WriteLine("4. Generate Statistics");
+                    Console.WriteLine("5. Exit");
+
+                    var choice = Console.ReadLine();
+                    switch (choice)
+                    {
+                        case "1":
+                            MakeAnOrder(customerId);
+                            break;
+                        case "2":
+                            MakeAReservation(customerId);
+                            break;
+                        case "3":
+                            // Implement process payment functionality if needed
+                            break;
+                        case "4":
+                            // Implement generate statistics functionality if needed
+                            break;
+                        case "5":
+                            return;
+                        default:
+                            Console.WriteLine("Invalid option, please try again.");
+                            break;
+                    }
                 }
             }
-            
-        }
-        else
-        {
-            Console.WriteLine("Customer not found.");
+            else
+            {
+                Console.WriteLine("Customer not found. Please re-enter your name.");
+            }
         }
     }
 
     static void StaffInterface()
     {
-        bool exit = false;
-        while (!exit)
+        while (true)
         {
             Console.WriteLine("Select an option:");
             Console.WriteLine("1. Make an Order For the Customer");
             Console.WriteLine("2. Make a Reservation for the Customer");
             Console.WriteLine("3. Cancel a Reservation for the Customer");
             Console.WriteLine("4. Generate Statistics");
-            Console.WriteLine("5. Exit");
-         
-           
+            Console.WriteLine("5. Process a Refund");
+            Console.WriteLine("6. Exit");
 
             var choice = Console.ReadLine();
             switch (choice)
             {
                 case "1":
-                   // MakeAnOrder(customerId);
+                    // Implement make an order for customer functionality if needed
                     break;
                 case "2":
-                    Console.WriteLine("Enter the customer name:");
-                    string name = Console.ReadLine();
-                    var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
-                    if (customerRecord != null)
+                    while (true)
                     {
-                        int customerId = int.Parse(customerRecord.Split(',')[0]);
-                        MakeAReservation(customerId);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Customer not found.");
+                        Console.WriteLine("Enter the customer name:");
+                        string name = Console.ReadLine();
+                        var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
+                        if (customerRecord != null)
+                        {
+                            int customerId = int.Parse(customerRecord.Split(',')[0]);
+                            MakeAReservation(customerId);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Customer not found. Please re-enter the customer name.");
+                        }
                     }
                     break;
                 case "3":
-                    Console.WriteLine("Enter reservation ID to cancel:");
-                    int reservationId = int.Parse(Console.ReadLine());
-                    if (reservationSystem.CancelReservation(reservationId))
+                    while (true)
                     {
-                        Console.WriteLine("Reservation cancelled successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed to cancel reservation.");
+                        Console.WriteLine("Enter reservation ID to cancel:");
+                        if (int.TryParse(Console.ReadLine(), out int reservationId))
+                        {
+                            if (reservationSystem.CancelReservation(reservationId))
+                            {
+                                Console.WriteLine("Reservation cancelled successfully.");
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Failed to cancel reservation. Please re-enter the reservation ID.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid reservation ID. Please enter a valid number.");
+                        }
                     }
                     break;
                 case "4":
-                    //ProcessPayment();
                     Statistics stats = new Statistics(dbManager);
                     stats.DisplayItemSalesStatistics();
                     break;
                 case "5":
-                    exit = true;
+                    ProcessRefund();
                     break;
+                case "6":
+                    return;
                 default:
                     Console.WriteLine("Invalid option, please try again.");
                     break;
             }
         }
-    
     }
 
     static void MakeAnOrder(int customerId)
@@ -153,6 +170,7 @@ public class Program
             Console.WriteLine("Customer not found.");
             return;
         }
+
         Console.WriteLine($"Hello, {customerName}. Available Menu Items:");
         var items = menuManager.ListAvailableItems();
         foreach (var item in items)
@@ -160,18 +178,32 @@ public class Program
             Console.WriteLine(item);
         }
 
-        Console.WriteLine("Enter the item numbers you want to order (comma separated):");
-        var input = Console.ReadLine();
-        var ids = input.Split(',');
         Dictionary<int, int> itemQuantities = new Dictionary<int, int>();
-
-        foreach (var id in ids)
+        while (true)
         {
-            Console.WriteLine($"Enter quantity for item ID {id.Trim()}:");
-            int quantity = int.Parse(Console.ReadLine());
-            if (int.TryParse(id.Trim(), out int itemId))
+            Console.WriteLine("Enter the item numbers you want to order (comma separated):");
+            var input = Console.ReadLine();
+            var ids = input.Split(',');
+
+            bool valid = true;
+            foreach (var id in ids)
             {
-                itemQuantities.Add(itemId, quantity);
+                Console.WriteLine($"Enter quantity for item ID {id.Trim()}:");
+                if (int.TryParse(Console.ReadLine(), out int quantity) && int.TryParse(id.Trim(), out int itemId))
+                {
+                    itemQuantities[itemId] = quantity;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please re-enter the item numbers and quantities.");
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid)
+            {
+                break;
             }
         }
 
@@ -182,12 +214,19 @@ public class Program
             Console.WriteLine($"Order {orderId} placed successfully.");
             Console.WriteLine($"Total amount due: ${totalAmount}");
 
-            // Automatically initiate the payment process using the customer's name
-            Console.WriteLine("Please confirm the payment amount to proceed:");
-            double enteredAmount = double.Parse(Console.ReadLine());
-
-            // Use the customer's name to initiate the payment process
-            ProcessPayment(customerName, enteredAmount, orderId, totalAmount);
+            while (true)
+            {
+                Console.WriteLine("Please confirm the payment amount to proceed:");
+                if (double.TryParse(Console.ReadLine(), out double enteredAmount))
+                {
+                    ProcessPayment(customerName, enteredAmount, orderId, totalAmount);
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid amount entered. Please re-enter the amount.");
+                }
+            }
         }
         else
         {
@@ -197,40 +236,45 @@ public class Program
 
     static void ProcessPayment(string customerName, double enteredAmount, int orderId, double totalAmount)
     {
-        Console.WriteLine("Please enter your debit card number:");
-        string cardNumber = Console.ReadLine();
-
-        if (Math.Abs(enteredAmount - totalAmount) < 0.01)
+        while (true)
         {
-            if (paymentProcessor.ValidateCardNumber(cardNumber))
+            Console.WriteLine("Please enter your debit card number:");
+            string cardNumber = Console.ReadLine();
+
+            if (Math.Abs(enteredAmount - totalAmount) < 0.01)
             {
-                if (paymentProcessor.ProcessPayment(customerName, enteredAmount, cardNumber))
+                if (paymentProcessor.ValidateCardNumber(cardNumber))
                 {
-                    Console.WriteLine("Payment processed successfully.");
+                    if (paymentProcessor.ProcessPayment(customerName, enteredAmount, cardNumber))
+                    {
+                        Console.WriteLine("Payment processed successfully.");
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Payment failed. Please try again.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Payment failed.");
+                    Console.WriteLine("Invalid debit card number. Please re-enter the card number.");
                 }
             }
             else
             {
-                Console.WriteLine("Invalid debit card number.");
+                Console.WriteLine("Entered amount does not match the total order amount. Please re-enter the amount.");
             }
-        }
-        else
-        {
-            Console.WriteLine("Entered amount does not match the total order amount.");
         }
     }
 
+    
 
 
 
     static void MakeAReservation(int customerId)
     {
         Console.WriteLine("Checking for available tables...");
-        var availableTables = tableManager.ListAvailableTables();  // This method needs to be implemented in TableManager
+        var availableTables = tableManager.ListAvailableTables();
 
         if (availableTables.Any())
         {
@@ -240,23 +284,34 @@ public class Program
                 Console.WriteLine($"Table ID: {table.TableId}, Capacity: {table.Capacity}");
             }
 
-            Console.WriteLine("Enter the Table ID you would like to reserve:");
-            int tableId = int.Parse(Console.ReadLine());
-
-           // Console.WriteLine("Enter your Customer ID:");
-           // int customerId = int.Parse(Console.ReadLine());
-
-            Console.WriteLine("Enter Date of Reservation (yyyy-mm-dd):");
-            DateTime reservationDate = DateTime.Parse(Console.ReadLine());
-
-            if (reservationSystem.MakeReservation(customerId, tableId, reservationDate))
+            while (true)
             {
-                Console.WriteLine("Your reservation has been made successfully.");
-                notificationService.SendAlert(customerId, "Your reservation is confirmed.");
-            }
-            else
-            {
-                Console.WriteLine("Failed to make the reservation. The table might not be available.");
+                Console.WriteLine("Enter the Table ID you would like to reserve:");
+                if (int.TryParse(Console.ReadLine(), out int tableId))
+                {
+                    Console.WriteLine("Enter Date of Reservation (yyyy-mm-dd):");
+                    if (DateTime.TryParse(Console.ReadLine(), out DateTime reservationDate))
+                    {
+                        if (reservationSystem.MakeReservation(customerId, tableId, reservationDate))
+                        {
+                            Console.WriteLine("Your reservation has been made successfully.");
+                            notificationService.SendAlert(customerId, "Your reservation is confirmed.");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed to make the reservation. The table might not be available.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid date format. Please enter the date in yyyy-mm-dd format.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Table ID. Please enter a valid number.");
+                }
             }
         }
         else
@@ -265,12 +320,35 @@ public class Program
         }
     }
 
-
-    /*static void GenerateStatistics()
+    static void ProcessRefund()
     {
-        Statistics stats = new Statistics(dbManager);
-        stats.GenerateSalesReport();
-        stats.AnalyzeCustomerTrends();
-        stats.AnalyzeMostSellingItems();
-    }*/
+        while (true)
+        {
+            Console.WriteLine("Enter the order ID to refund:");
+            if (int.TryParse(Console.ReadLine(), out int orderId))
+            {
+                if (paymentProcessor.RefundPayment(orderId))
+                {
+                    Console.WriteLine("Refund processed successfully.");
+                    if (orderManager.RemoveOrder(orderId))
+                    {
+                        Console.WriteLine("Order removed successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to remove the order.");
+                    }
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Refund failed. Please re-enter the order ID.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid order ID. Please enter a valid number.");
+            }
+        }
+    }
 }

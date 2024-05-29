@@ -6,7 +6,3 @@ OrderID,CustomerID,Details,Status,TotalAmount
 6,1,'1x Salad; 2x Burger; 3x Fish; 4x Chips','Pending',99
 7,2,'1x Salad; 2x Fish; 3x Pizza; 4x Wine','Pending',140
 8,4,'1x Salad; 2x Burger','Pending',34
-10,4,'1x Steak; 2x Salad','Pending',45
-11,4,'1x Steak; 2x Salad; 3x Fish','Pending',90
-12,1,'1x Salad; 2x Burger; 3x Fish','Pending',79
-13,4,'1x Steak; 2x Burger; 3x Pizza','Pending',109

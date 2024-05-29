@@ -53,19 +53,6 @@ namespace Relaxing_Kaola
             return true; // Table is available
         }
 
-
-        public bool CheckTableAvailability(DateTime date, int partySize)
-        {
-            var tables = DbManager.GetAllRecords("Tables");
-            foreach (var table in tables)
-            {
-                var details = table.Split(',');
-                if (details[2] == "Available" && int.Parse(details[1]) >= partySize)
-                    return true;
-            }
-            return false;
-        }
-
         public bool UpdateTableStatus(int tableId, string newStatus)
         {
             var record = DbManager.FindRecords("Tables", $"{tableId},").FirstOrDefault();
