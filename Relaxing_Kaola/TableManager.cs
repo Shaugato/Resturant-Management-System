@@ -36,23 +36,6 @@ namespace Relaxing_Kaola
             .Where(table => table.Status == "Available")
             .ToList();
         }
-
-        public bool IsTableAvailable(int tableId, DateTime date)
-        {
-            // This method checks if the table is available for a specific date
-            var reservations = DbManager.FindRecords("Reservations", $"{tableId}");
-            foreach (var res in reservations)
-            {
-                var fields = res.Split(',');
-                DateTime reservedDate = DateTime.Parse(fields[3]);
-                if (reservedDate.Date == date.Date)
-                {
-                    return false; // Table is not available on this date
-                }
-            }
-            return true; // Table is available
-        }
-
         public bool UpdateTableStatus(int tableId, string newStatus)
         {
             var record = DbManager.FindRecords("Tables", $"{tableId},").FirstOrDefault();

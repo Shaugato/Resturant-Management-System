@@ -58,11 +58,6 @@ namespace Relaxing_Kaola
                 return false;
             }
         }
-
-
-
-
-
         public bool ValidateCardNumber(string cardNumber)
         {
             int sum = 0;
