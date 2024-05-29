@@ -54,9 +54,7 @@ public class Program
                     Console.WriteLine("Select an option:");
                     Console.WriteLine("1. Make an Order");
                     Console.WriteLine("2. Make a Reservation");
-                    Console.WriteLine("3. Process Payment");
-                    Console.WriteLine("4. Generate Statistics");
-                    Console.WriteLine("5. Exit");
+                    Console.WriteLine("3. Exit");
 
                     var choice = Console.ReadLine();
                     switch (choice)
@@ -68,12 +66,6 @@ public class Program
                             MakeAReservation(customerId);
                             break;
                         case "3":
-                            // Implement process payment functionality if needed
-                            break;
-                        case "4":
-                            // Implement generate statistics functionality if needed
-                            break;
-                        case "5":
                             return;
                         default:
                             Console.WriteLine("Invalid option, please try again.");
@@ -104,17 +96,28 @@ public class Program
             switch (choice)
             {
                 case "1":
-                    // Implement make an order for customer functionality if needed
+                    Console.WriteLine("Enter the customer name:");
+                    string name = Console.ReadLine();
+                    var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
+                    if (customerRecord != null)
+                    {
+                        int customerId = int.Parse(customerRecord.Split(',')[0]);
+                        MakeAnOrder(customerId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Customer not found.");
+                    }
                     break;
                 case "2":
                     while (true)
                     {
                         Console.WriteLine("Enter the customer name:");
-                        string name = Console.ReadLine();
-                        var customerRecord = dbManager.FindRecords("Customers", name).FirstOrDefault();
-                        if (customerRecord != null)
+                        string name2 = Console.ReadLine();
+                        var customerRecord1 = dbManager.FindRecords("Customers", name2).FirstOrDefault();
+                        if (customerRecord1 != null)
                         {
-                            int customerId = int.Parse(customerRecord.Split(',')[0]);
+                            int customerId = int.Parse(customerRecord1.Split(',')[0]);
                             MakeAReservation(customerId);
                             break;
                         }
