@@ -1,8 +1,3 @@
 OrderID,CustomerID,Details,Status,TotalAmount
-1,1,'1x Soda; 2x Wine','Pending',23
-2,1,'1x Chips; 3x Tacos','Pending',41
-3,1,'1x Burger; 2x Chips; 3x Pizza; 4x Nachos','Pending',114
-5,1,'1x Salad; 2x Burger; 3x Fish; 4x Chips','Pending',99
-6,1,'1x Salad; 2x Burger; 3x Fish; 4x Chips','Pending',99
-7,2,'1x Salad; 2x Fish; 3x Pizza; 4x Wine','Pending',140
-8,4,'1x Salad; 2x Burger','Pending',34
+2,1,'1x Steak; 2x Salad; 3x Burger','Pending',81
+3,2,'2x Steak; 3x Salad; 4x Burger; 5x Fish; 6x Chips; 5x Pizza; 8x Soda','Pending',357

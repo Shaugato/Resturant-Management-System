@@ -1,9 +1,3 @@
-2,2,30.00,Cash,Completed
-3,3,45.00,Credit Card,Completed
-4,4,25.50,Debit Card,Completed
-5,5,75.00,Credit Card,Completed
-6,6,20.00,Cash,Completed
-7,7,33.50,Credit Card,Completed
-8,8,22.00,Debit Card,Completed
-11,1,35,Digital,Completed
-10,9,119,Digital,Completed
+PayID,OrderID,OrderMethod,OrderStatus
+2,2,81,Digital,Completed
+3,3,357,Digital,Completed

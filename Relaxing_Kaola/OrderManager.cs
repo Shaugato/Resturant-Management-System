@@ -54,7 +54,7 @@ namespace Relaxing_Kaola
             return 0;
         }
 
-        public bool RemoveOrder(int orderId)
+         public bool RemoveOrder(int orderId)
         {
             var orderRecord = dbManager.FindRecords("Orders", orderId.ToString()).FirstOrDefault();
             if (orderRecord != null)

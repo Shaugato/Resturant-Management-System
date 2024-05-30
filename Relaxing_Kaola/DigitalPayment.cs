@@ -88,7 +88,7 @@ namespace Relaxing_Kaola
             var orderRecord = DbManager.FindRecords("Orders", orderId.ToString()).FirstOrDefault();
             if (orderRecord != null)
             {
-                DbManager.DeleteRecord("Orders", orderId.ToString());
+                //DbManager.DeleteRecord("Orders", orderId.ToString());
                 var paymentRecord = DbManager.FindRecords("Payments", orderId.ToString()).FirstOrDefault();
                 if (paymentRecord != null)
                 {
